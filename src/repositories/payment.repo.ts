@@ -38,8 +38,11 @@ export const paymentRepo = {
   },
 
   // Revenue report by date range
-  async getRevenue(startDate?: string, endDate?: string): Promise<{ total: number; count: number }> {
-    let query = 'SELECT COALESCE(SUM(amount), 0) as total, COUNT(*) as count FROM payments';
+  async getRevenue(startDate?: string, endDate?: string): Promise<{ 
+    total_revenue: number; 
+    total_orders: number 
+  }> {
+    let query = 'SELECT COALESCE(SUM(amount), 0) as total_revenue, COUNT(*) as total_orders FROM payments';
     const values: any[] = [];
     
     if (startDate && endDate) {
@@ -53,10 +56,10 @@ export const paymentRepo = {
       values.push(endDate);
     }
 
-    const result = await db.query<{ total: string; count: string }>(query, values);
+    const result = await db.query<{ total_revenue: string; total_orders: string }>(query, values);
     return {
-      total: Number(result.rows[0].total),
-      count: Number(result.rows[0].count),
+      total_revenue: Number(result.rows[0].total_revenue),
+      total_orders: Number(result.rows[0].total_orders),
     };
   },
 };

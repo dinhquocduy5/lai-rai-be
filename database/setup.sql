@@ -1,8 +1,8 @@
 -- Database Setup Script for Lai Rai Restaurant
 -- PostgreSQL / Supabase Compatible
 
--- Set timezone to Vietnam
-SET timezone = 'Asia/Ho_Chi_Minh';
+-- Set timezone to UTC (store all timestamps in UTC)
+SET timezone = 'UTC';
 
 -- Drop tables if exists (for clean setup)
 DROP TABLE IF EXISTS payments CASCADE;
@@ -31,7 +31,7 @@ CREATE TABLE menu_items (
 CREATE TABLE orders (
   id SERIAL PRIMARY KEY,
   table_id INTEGER REFERENCES tables(id) ON DELETE RESTRICT,
-  check_in TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'Asia/Ho_Chi_Minh'),
+  check_in TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   check_out TIMESTAMPTZ,
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'cancelled'))
 );
@@ -44,7 +44,7 @@ CREATE TABLE order_items (
   quantity INTEGER NOT NULL CHECK (quantity > 0),
   price_at_order_time NUMERIC(10,2) NOT NULL,
   note TEXT,
-  created_at TIMESTAMPTZ DEFAULT (NOW() AT TIME ZONE 'Asia/Ho_Chi_Minh')
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Create payments table
@@ -52,7 +52,7 @@ CREATE TABLE payments (
   id SERIAL PRIMARY KEY,
   order_id INTEGER REFERENCES orders(id) ON DELETE RESTRICT,
   amount NUMERIC(10,2) NOT NULL CHECK (amount > 0),
-  paid_at TIMESTAMPTZ DEFAULT (NOW() AT TIME ZONE 'Asia/Ho_Chi_Minh'),
+  paid_at TIMESTAMPTZ DEFAULT NOW(),
   payment_method VARCHAR(10) CHECK (payment_method = 'cash') DEFAULT 'cash'
 );
 

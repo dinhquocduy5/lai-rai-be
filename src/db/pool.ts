@@ -15,7 +15,8 @@ export const pool = new Pool({
         rejectUnauthorized: false, // Required for Supabase
       }
     : false, // Local PostgreSQL
-  options: '-c timezone=Asia/Ho_Chi_Minh',
+  // Store all timestamps as UTC in database
+  options: '-c timezone=UTC',
 });
 
 const dbType = isSupabase ? 'Supabase' : 'Local';
