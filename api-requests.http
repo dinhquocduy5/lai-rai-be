@@ -1,0 +1,235 @@
+# Lai Rai Restaurant API - Test Requests
+
+## Health Checks
+### Server Health
+GET http://localhost:3000/health
+
+### API Health
+GET http://localhost:3000/api/v1/health
+
+### Database Health
+GET http://localhost:3000/api/v1/health/db
+
+---
+
+## Tables
+### Get All Tables
+GET http://localhost:3000/api/v1/tables
+
+### Get Table by ID
+GET http://localhost:3000/api/v1/tables/1
+
+### Create Table
+POST http://localhost:3000/api/v1/tables
+Content-Type: application/json
+
+{
+  "name": "Bàn 11",
+  "status": "available"
+}
+
+### Update Table
+PUT http://localhost:3000/api/v1/tables/11
+Content-Type: application/json
+
+{
+  "name": "Bàn 11 - Updated"
+}
+
+### Delete Table
+DELETE http://localhost:3000/api/v1/tables/11
+
+### Set Table Available
+PATCH http://localhost:3000/api/v1/tables/1/available
+
+### Set Table Occupied
+PATCH http://localhost:3000/api/v1/tables/1/occupied
+
+---
+
+## Menu Items
+### Get All Menu Items
+GET http://localhost:3000/api/v1/menu-items
+
+### Get Food Items Only
+GET http://localhost:3000/api/v1/menu-items?type=food
+
+### Get Drink Items Only
+GET http://localhost:3000/api/v1/menu-items?type=drink
+
+### Get Menu Item by ID
+GET http://localhost:3000/api/v1/menu-items/1
+
+### Create Menu Item
+POST http://localhost:3000/api/v1/menu-items
+Content-Type: application/json
+
+{
+  "name": "Gỏi cuốn",
+  "price": 30000,
+  "type": "food"
+}
+
+### Update Menu Item
+PUT http://localhost:3000/api/v1/menu-items/1
+Content-Type: application/json
+
+{
+  "name": "Phở bò đặc biệt",
+  "price": 55000
+}
+
+### Delete Menu Item
+DELETE http://localhost:3000/api/v1/menu-items/17
+
+---
+
+## Orders
+### Get All Orders
+GET http://localhost:3000/api/v1/orders
+
+### Get Order by ID
+GET http://localhost:3000/api/v1/orders/1
+
+### Get Orders by Table ID
+GET http://localhost:3000/api/v1/orders/table/1
+
+### Get Active Order by Table ID
+GET http://localhost:3000/api/v1/orders/table/1/active
+
+### Create Order (Đặt món)
+POST http://localhost:3000/api/v1/orders
+Content-Type: application/json
+
+{
+  "table_id": 1,
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2,
+      "note": "Ít hành"
+    },
+    {
+      "menu_item_id": 9,
+      "quantity": 2
+    }
+  ]
+}
+
+### Update Order Items (Đặt thêm món)
+PUT http://localhost:3000/api/v1/orders/1/items
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 3,
+      "note": "Ít hành, thêm chanh"
+    },
+    {
+      "menu_item_id": 9,
+      "quantity": 3
+    },
+    {
+      "menu_item_id": 3,
+      "quantity": 1,
+      "note": "Không rau thơm"
+    }
+  ]
+}
+
+### Cancel Order
+POST http://localhost:3000/api/v1/orders/1/cancel
+
+---
+
+## Payments
+### Get All Payments
+GET http://localhost:3000/api/v1/payments
+
+### Get Payment by ID
+GET http://localhost:3000/api/v1/payments/1
+
+### Get Payment by Order ID
+GET http://localhost:3000/api/v1/payments/order/1
+
+### Process Payment (Thanh toán)
+POST http://localhost:3000/api/v1/payments
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "amount": 150000,
+  "payment_method": "cash"
+}
+
+### Get Revenue Report (All time)
+GET http://localhost:3000/api/v1/payments/revenue
+
+### Get Revenue Report (Date Range)
+GET http://localhost:3000/api/v1/payments/revenue?start_date=2025-01-01&end_date=2025-12-31
+
+---
+
+## Complete Business Flow Example
+
+### Step 1: Check available tables
+GET http://localhost:3000/api/v1/tables
+
+### Step 2: Create order for table 1
+POST http://localhost:3000/api/v1/orders
+Content-Type: application/json
+
+{
+  "table_id": 1,
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2,
+      "note": "Ít hành"
+    },
+    {
+      "menu_item_id": 13,
+      "quantity": 2
+    }
+  ]
+}
+
+### Step 3: Add more items to order (assume order_id = 1)
+PUT http://localhost:3000/api/v1/orders/1/items
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2,
+      "note": "Ít hành"
+    },
+    {
+      "menu_item_id": 13,
+      "quantity": 2
+    },
+    {
+      "menu_item_id": 10,
+      "quantity": 3
+    }
+  ]
+}
+
+### Step 4: Get order total
+GET http://localhost:3000/api/v1/orders/1
+
+### Step 5: Process payment
+POST http://localhost:3000/api/v1/payments
+Content-Type: application/json
+
+{
+  "order_id": 1,
+  "amount": 145000,
+  "payment_method": "cash"
+}
+
+### Step 6: Verify table is available again
+GET http://localhost:3000/api/v1/tables/1

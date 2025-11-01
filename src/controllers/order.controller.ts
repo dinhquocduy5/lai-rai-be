@@ -1,17 +1,45 @@
 import type { Request, Response } from 'express';
-import { orderRepo } from '@/repositories/order.repo';
+import { orderService } from '@/services/order.service';
+import { asyncHandler } from '@/middlewares/async-handler';
 
 export const orderController = {
-  async create(req: Request, res: Response) {
-    const body = req.body as Parameters<typeof orderRepo.createWithItemsTx>[0]; // hoặc interface
-    const data = await orderRepo.createWithItemsTx(body);
-    res.status(201).json(data);
-  },
+  getAll: asyncHandler(async (_req: Request, res: Response) => {
+    const orders = await orderService.getAllOrders();
+    res.json({ success: true, data: orders });
+  }),
 
-  async update(req: Request, res: Response) {
-    // const orderId = Number(req.params.id);
-    // const body = req.body as Parameters<typeof orderRepo.updateOrder>[1];
-    // const data = await orderRepo.updateOrder(orderId, body);
-    // res.json(data);
-  },
+  getById: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const order = await orderService.getOrderById(id);
+    res.json({ success: true, data: order });
+  }),
+
+  getByTableId: asyncHandler(async (req: Request, res: Response) => {
+    const tableId = Number(req.params.tableId);
+    const orders = await orderService.getOrdersByTableId(tableId);
+    res.json({ success: true, data: orders });
+  }),
+
+  getActiveByTableId: asyncHandler(async (req: Request, res: Response) => {
+    const tableId = Number(req.params.tableId);
+    const order = await orderService.getActiveOrderByTableId(tableId);
+    res.json({ success: true, data: order });
+  }),
+
+  create: asyncHandler(async (req: Request, res: Response) => {
+    const data = await orderService.createOrder(req.body);
+    res.status(201).json({ success: true, data });
+  }),
+
+  updateItems: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const data = await orderService.updateOrderItems(id, req.body);
+    res.json({ success: true, data });
+  }),
+
+  cancel: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const order = await orderService.cancelOrder(id);
+    res.json({ success: true, data: order, message: 'Order cancelled successfully' });
+  }),
 };

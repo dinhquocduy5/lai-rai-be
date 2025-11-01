@@ -1,13 +1,25 @@
 import { Router } from 'express';
 import { db } from '@/db/pool';
+import { asyncHandler } from '@/middlewares/async-handler';
 
 export const healthRoutes = Router();
 
-healthRoutes.get('/db', async (_req, res) => {
-  try {
+healthRoutes.get(
+  '/db',
+  asyncHandler(async (_req, res) => {
     const result = await db.query<{ now: string }>('SELECT NOW() AS now');
-    res.json({ ok: true, time: result.rows[0].now });
-  } catch (err: any) {
-    res.status(500).json({ ok: false, error: err.message });
-  }
+    res.json({ 
+      success: true, 
+      message: 'Database connected',
+      time: result.rows[0].now 
+    });
+  }),
+);
+
+healthRoutes.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    message: 'API is healthy',
+    timestamp: new Date().toISOString(),
+  });
 });
