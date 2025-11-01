@@ -2,6 +2,7 @@ import { orderRepo } from '@/repositories/order.repo';
 import { tableRepo } from '@/repositories/table.repo';
 import type { CreateOrderWithItemsInput, UpdateOrderItemsInput } from '@/repositories/order.repo';
 import { BadRequestError, ConflictError } from '@/utils/errors';
+import { transformTimestamps } from '@/utils/date-formatter';
 
 export const orderService = {
   async getAllOrders() {
@@ -13,14 +14,15 @@ export const orderService = {
         const items = await orderRepo.getOrderItems(order.id);
         const total = await orderRepo.getOrderTotal(order.id);
         
-        return {
+        return transformTimestamps({
           ...order,
           items: items.map((item) => ({
             ...item,
             price_at_order_time: Number(item.price_at_order_time),
+            created_at: item.created_at,
           })),
           total_amount: total,
-        };
+        });
       })
     );
     
@@ -33,10 +35,11 @@ export const orderService = {
     const total = await orderRepo.getOrderTotal(id);
 
     return {
-      order,
+      order: transformTimestamps(order),
       items: items.map((item) => ({
         ...item,
         price_at_order_time: Number(item.price_at_order_time),
+        created_at: item.created_at,
       })),
       total,
     };
@@ -59,10 +62,11 @@ export const orderService = {
     const total = await orderRepo.getOrderTotal(order.id);
 
     return {
-      order,
+      order: transformTimestamps(order),
       items: items.map((item) => ({
         ...item,
         price_at_order_time: Number(item.price_at_order_time),
+        created_at: item.created_at,
       })),
       total,
     };
