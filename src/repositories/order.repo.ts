@@ -49,7 +49,11 @@ export const orderRepo = {
 
   async getOrderItems(orderId: number): Promise<OrderItemRow[]> {
     const result = await db.query<OrderItemRow>(
-      'SELECT * FROM order_items WHERE order_id = $1 ORDER BY created_at',
+      `SELECT oi.*, mi.name, mi.type 
+       FROM order_items oi
+       JOIN menu_items mi ON oi.menu_item_id = mi.id
+       WHERE oi.order_id = $1 
+       ORDER BY oi.created_at`,
       [orderId],
     );
     return result.rows;

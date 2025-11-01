@@ -15,6 +15,7 @@ export const pool = new Pool({
         rejectUnauthorized: false, // Required for Supabase
       }
     : false, // Local PostgreSQL
+  options: '-c timezone=Asia/Ho_Chi_Minh',
 });
 
 const dbType = isSupabase ? 'Supabase' : 'Local';

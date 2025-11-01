@@ -5,7 +5,26 @@ import { BadRequestError, ConflictError } from '@/utils/errors';
 
 export const orderService = {
   async getAllOrders() {
-    return orderRepo.findAll();
+    const orders = await orderRepo.findAll();
+    
+    // Fetch items and total for each order
+    const ordersWithDetails = await Promise.all(
+      orders.map(async (order) => {
+        const items = await orderRepo.getOrderItems(order.id);
+        const total = await orderRepo.getOrderTotal(order.id);
+        
+        return {
+          ...order,
+          items: items.map((item) => ({
+            ...item,
+            price_at_order_time: Number(item.price_at_order_time),
+          })),
+          total_amount: total,
+        };
+      })
+    );
+    
+    return ordersWithDetails;
   },
 
   async getOrderById(id: number) {

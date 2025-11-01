@@ -6,6 +6,8 @@ export interface OrderItemRow {
   price_at_order_time: string; // NUMERIC(10,2) -> string
   note: string | null; // TEXT
   created_at: string; // TIMESTAMP
+  name?: string; // From JOIN with menu_items
+  type?: 'food' | 'drink'; // From JOIN with menu_items
 }
 
 export type OrderItem = Omit<OrderItemRow, 'price_at_order_time'> & { price_at_order_time: number };
